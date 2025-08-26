@@ -1,0 +1,46 @@
+# ========================
+# Obsidian / Generic
+# ========================
+# Ignore Obsidian config by default (cache, workspace state, local prefs)
+.obsidian/
+
+# Re-include shared config so collaborators get a consistent setup
+!.obsidian/themes/
+!.obsidian/snippets/
+!.obsidian/plugins/
+!.obsidian/community-plugins.json
+!.obsidian/appearance.json
+!.obsidian/app.json
+!.obsidian/hotkeys.json
+!.obsidian/core-plugins.json
+!.obsidian/core-plugins-migration.json
+
+# Keep plugin directories but drop local/stateful bits
+.obsidian/plugins/*/data.json
+.obsidian/plugins/*/*.log
+.obsidian/plugins/*/cache/
+.obsidian/plugins/*/tmp/
+
+# Explicitly keep Excalidraw drawings (public)
+!**/*.excalidraw
+!**/*.excalidraw.md
+# If your assets live in these common folders, keep them too
+!Excalidraw/**
+!excalidraw/**
+!assets/**
+!attachments/**
+
+# (FYI: workspace.json stays ignored because the .obsidian/ dir is ignored.)
+
+# ========================
+# Temporary / OS-specific
+# ========================
+*.bak
+*.tmp
+*.swp
+*.swo
+*~
+.nfs*
+.DS_Store
+Thumbs.db
+desktop.ini
