@@ -1,25 +1,39 @@
 A strategic approach to distilling complex architectures into clear, visual representations. Not affiliated with or endorsed by any organisation. All diagrams reflect my personal learning.
 
-# Metrics DogStatsD
+# Metrics
+
+## Metrics DogStatsD
 ![DogStatsD](DogStatsD.png)
 
-# Logs Ingest Pathway
-![Log Pathway](log_pathway_condensed.png)
+---
 
-# Infrastructure Kubernetes Agents
-![Kubernetes Agents](kubernetes_diagrams_after_updated-v2.png)
+# Traces
 
-# Infrastructure Docker Agent
-![Docker Agent](agent-on-docker-host.png)
-
-# Trace Anatomy
+## Trace Anatomy
 ![Trace Anatomy](anatomyofatrace.jpg)
 
-# Trace Instrumentation
+## Trace Instrumentation
 ![Trace Instrumentation](apm-tracer.png)
 
-# dd-trace-py's ddtrace-run command
+## Trace dd-trace-py's ddtrace-run command
 ![dd-trace-py ddtrace-run command](ddtrace-run.jpeg)
+
+---
+
+# Logs
+
+## Logs Ingest Pathway
+![Log Pathway](log_pathway_condensed.png)
+
+---
+
+# Infrastructure
+
+## Infrastructure Kubernetes Agents
+![Kubernetes Agents](kubernetes_diagrams_after_updated-v2.png)
+
+## Infrastructure Docker Agent
+![Docker Agent](agent-on-docker-host.png)
 
 - The Wrapper (ddtrace-run) is the outermost box: It starts first and creates the tracing environment for everything that happens inside it.
 
