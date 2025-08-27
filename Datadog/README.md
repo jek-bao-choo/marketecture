@@ -66,3 +66,43 @@ The brilliant part is that the advice code can even share information between th
 - The Runner (uv run) is the middle box: It runs inside the wrapper's environment. Its job is to set up the correct Python virtual environment and context for your application.
 
 - The App (main.py) is at the core: It runs inside the runner's context, which itself is inside the wrapper's tracing environment.
+
+
+# Database
+
+## MySQL
+![[mysql.png]]
+### **Brief summary: Datadog Agent and MySQL**
+Datadog's database monitoring for MySQL relies on the **Datadog Agent**. You install this agent on a host that has network access to your MySQL instance. The agent connects to the database as a read-only user to collect a variety of telemetry data. For self-hosted databases, it's best to have the agent on the same host as the database. For managed services like Amazon RDS, the agent connects remotely.
+### **Configuration and Setup**
+To enable data collection, you need to:
+1. **Create a Datadog user in MySQL**: This is a dedicated user for the Datadog Agent.
+2. **Grant permissions**: The Datadog user needs specific permissions to access the necessary data. The core permissions are `SELECT` on all databases and tables, and `EXECUTE` on certain procedures.
+3. **Configure the Agent**: You'll need to edit the `mysql.d/conf.yaml` file in your Agent's configuration directory. This file contains the connection details for your MySQL instance, as well as options for customizing data collection.
+### **Data Collection Mechanisms**
+The Datadog Agent uses several mechanisms to collect data from your MySQL database.
+#### **1. Performance Schema**
+The **Performance Schema** is a powerful feature in MySQL that provides detailed information about server execution. Datadog leverages it to collect:
+- **Query Metrics**: The `events_statements_summary_by_digest` table is a key source of information. It provides aggregated statistics about queries, such as execution time, number of rows returned, and number of errors.
+- **Wait Events**: The `events_waits_current`, `events_waits_history`, and `events_waits_history_long` tables provide information about what the database is waiting on, which is crucial for identifying bottlenecks.
+- **Stage Events**: The `events_stages_current`, `events_stages_history`, and `events_stages_history_long` tables provide information about the different stages of query execution.
+#### **2. System Views and Tables**
+The agent queries various system views and tables to gather information about the database's state and performance. These include:
+- **`sys.schema_table_statistics`**: This view provides information about table usage, such as the number of rows fetched, inserted, updated, and deleted.
+- **`information_schema`**: The agent uses this to gather metadata about databases, tables, and other objects.
+- **Standard MySQL Metrics**: The agent runs commands like `SHOW GLOBAL STATUS` and `SHOW VARIABLES` to collect a wide range of metrics about the database's health and performance. It also queries `INNODB_METRICS` for detailed information about the InnoDB storage engine.
+#### **3. `EXPLAIN` Plans**
+To help you understand how the database is executing your queries, the agent can collect **`EXPLAIN` plans**. It does this by running the `EXPLAIN` command on a sample of your queries. The agent has a stored procedure that it uses to do this safely and efficiently.
+#### **4. Log Collection**
+The Datadog Agent can also be configured to collect and parse your MySQL logs. This includes:
+- **Error log**: This log contains information about errors that have occurred in the database.
+- **Slow query log**: This log contains information about queries that have taken a long time to execute.
+- **General log**: This log contains information about all queries that have been executed.
+The agent can be configured to tail these log files and parse them for useful information.
+### **Data Transmission and Processing**
+Once the agent has collected the data, it sends it to the Datadog platform. There, the data is processed and made available in dashboards, notebooks, and other visualizations. Datadog also provides a number of features for analyzing and alerting on your database telemetry data.
+### **Advanced Configuration**
+The Datadog Agent provides a number of advanced configuration options that allow you to fine-tune data collection. For example, you can:
+- **Adjust the collection interval**: This controls how often the agent collects data from the database.
+- **Control the query sampling rate**: This controls how many of your queries the agent collects `EXPLAIN` plans for.
+- **Obfuscate sensitive data**: The agent can be configured to obfuscate sensitive data in your queries before sending it to Datadog.
