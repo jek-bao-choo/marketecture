@@ -47,7 +47,7 @@ The brilliant part is that the advice code can even share information between th
 
 ### Trace dd-trace-dotnet command
 
-![[dd-trace-dotnet.png]]
+![](dd-trace-dotnet.png)
 
 ---
 
