@@ -45,7 +45,7 @@ The brilliant part is that the advice code can even share information between th
 ![](javaagentbytecodeinstr.png)
 
 
-### Trace dd-trace-dotnet command
+### Trace dd-trace-dotnet on Windows Server 2022
 
 ![](dd-trace-dotnet.png)
 
