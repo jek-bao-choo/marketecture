@@ -44,6 +44,11 @@ Once a matcher finds the right spot, it injects tiny pieces of code called **Adv
 The brilliant part is that the advice code can even share information between the "enter" and "exit" steps, like passing the start time from the `@OnMethodEnter` code to the `@OnMethodExit` code. Source: https://github.com/DataDog/dd-trace-java/blob/master/docs/how_instrumentations_work.md
 ![](javaagentbytecodeinstr.png)
 
+
+### Trace dd-trace-dotnet command
+
+![[dd-trace-dotnet.png]]
+
 ---
 
 # Logs
