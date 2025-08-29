@@ -49,6 +49,23 @@ The brilliant part is that the advice code can even share information between th
 
 ![](dd-trace-dotnet.png)
 
+The diagram illustrates how **dd-trace-dotnet** instruments a .NET application on a Windows Server. Here's a breakdown of the process:
+
+1. **.NET Application Starts**: The process begins when your .NET application or Windows Service starts on the Windows Server.
+2. **CLR and JIT Compiler**: The **Common Language Runtime (CLR)** and its **Just-In-Time (JIT) Compiler** are fundamental to this process. The JIT compiler's role is to compile the **Intermediate Language (IL)** code of your application into native machine code that can be executed by the processor. This is done by setting environment variables (`COR_ENABLE_PROFILING=1` and `COR_PROFILER={Your-Profiler-GUID i.e. Datadog’s profiler CLSID}`). (For .NET Core/5+/6+ it’s the `CORECLR_*` equivalents, same GUID.) When an IIS app pool spins up **w3wp.exe**, the .NET CLR looks for above two environment variables
+3. **CLR Profiling API**: This is a powerful API that allows a profiler (in this case, dd-trace-dotnet) to attach to the CLR and receive notifications about various events, including when methods are about to be JIT-compiled. In short, once loaded, the profiler uses the CLR Profiling API to subscribe to runtime events via `ICorProfilerInfo::SetEventMask(2)`. It listens for module/assembly loads and (re)JIT events so it can **modify IL** of specific target methods before or after they’re JIT compiled.
+4. **dd-trace-dotnet Profiler**: This is a native library that's loaded by the CLR. It uses the Profiling API to "hook" into the JIT compilation process.
+5. **IL Rewriting**: As the JIT compiler is about to compile a method, the **dd-trace-dotnet Profiler** intercepts the process and performs **IL Rewriting**. This means it injects additional IL code into the method. This injected code is what captures the tracing information, such as when a method starts and ends. 
+6. **dd-trace-dotnet Managed Library**: The injected IL code calls functions in the **dd-trace-dotnet Managed Library**. This library is responsible for creating and managing the spans and traces that represent the execution of your application. The managed tracer batches spans and sends them to the **Datadog Agent** (default `localhost:8126`) over HTTP; you can override via `DD_AGENT_HOST` / `DD_TRACE_AGENT_URL`. If turn on **runtime metrics** (`DD_RUNTIME_METRICS_ENABLED=true`), the tracer listens to .NET **EventCounters** and ships metrics via **DogStatsD** (UDP 8125 by default). Continuous Profiler (optional) rides along in the same loader; enable separately if you want CPU/wall‑time/locks/alloc profiles.
+7. **Datadog Agent**: The managed library sends the collected trace data to the **Datadog Agent**, which is a separate process running on the server. 
+8. **Datadog Backend**: Finally, the Datadog Agent forwards the trace data to the **Datadog Backend**, where it is processed, indexed, and made available for you to view and analyze in the Datadog UI.
+This entire process happens automatically, without requiring any changes to your application's source code. By leveraging the .NET Profiling API and IL rewriting, **dd-trace-dotnet** can provide deep insights into the performance of your .NET applications and services.
+
+Gotchas:
+- **Only one profiler** at a time. If you have another profiler (coverage, RUM SDKs that use CLR profilers, etc.) you’ll conflict. Decide which one wins.
+![](dd-trace-dotnet-2.png)
+Source: GenAI
+
 ---
 
 # Logs
