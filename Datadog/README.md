@@ -126,7 +126,7 @@ The most common [profile types](https://docs.datadoghq.com/profiler/profile_type
 
 - The App (main.py) is at the core: It runs inside the runner's context, which itself is inside the wrapper's tracing environment.
 
-
+---
 # Database
 
 ## MySQL
@@ -165,3 +165,25 @@ The Datadog Agent provides a number of advanced configuration options that allow
 - **Adjust the collection interval**: This controls how often the agent collects data from the database.
 - **Control the query sampling rate**: This controls how many of your queries the agent collects `EXPLAIN` plans for.
 - **Obfuscate sensitive data**: The agent can be configured to obfuscate sensitive data in your queries before sending it to Datadog.
+
+---
+
+# SLO
+## Availability
+![](availability_table.png)
+## Error Budget
+The calculation for an error budget is 1 minus the SLA of the service.
+
+**1 - 99.9% = 0.1% error budget**
+
+If you were creating an SLO that tracked a set amount of time or number of requests at a 99% success rate, it would look like this:
+
+**Error budget = 1 - target = 1 - .99 = 0.01, or 1%**
+
+## Burn Rate
+![](burn_rate_formula.png)
+
+The **long alert window** is set in hours and ensures the alert tracks the burn rate over enough time to detect real issues. This helps prevent unnecessary alerts for small, temporary fluctuations in the burn rate.
+
+The **short alert window** is set in minutes. It allows the system to recover from minor issues before they escalate into bigger problems. When first creating the alert, it’s recommended to set the short window to half the length of the long window. You can adjust this later based on your team’s and business’s needs.
+![](burn_rate_alerts.png)
