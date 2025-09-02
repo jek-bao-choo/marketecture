@@ -16,11 +16,11 @@ A strategic approach to distilling complex architectures into clear, visual repr
 ![Trace Instrumentation](apm-tracer.png)
 
 ## Trace dd-trace-py's ddtrace-run command
-![dd-trace-py ddtrace-run command](ddtrace-run.jpeg)
+![dd-trace-py ddtrace-run command](ddtrace-run.png)
 
 ## Trace dd-trace-java command
 ![](javaagent.png)
-### The Core Idea of dd-trace-java: A Smart Assistant for Your Code
+### The Core idea of dd-trace-java: A Smart Assistant for Your Code
 
 Imagine your application's code is a series of instruction manuals for your computer. You want to know exactly when each instruction starts and stops, but you can't rewrite all the manuals yourself.
 
@@ -45,7 +45,7 @@ The brilliant part is that the advice code can even share information between th
 ![](javaagentbytecodeinstr.png)
 
 
-### Trace dd-trace-dotnet on Windows Server 2022
+## Trace dd-trace-dotnet on Windows Server 2022
 
 ![](dd-trace-dotnet.png)
 
@@ -72,6 +72,43 @@ Source: GenAI
 
 ## Logs Ingest Pathway
 ![Log Pathway](log_pathway_condensed.png)
+
+---
+
+# Profiling
+
+## Profiler Explained
+
+![](profiler-fg-explained.png)
+- The x-axis represents the total CPU consumption (not the time range over which the profiles were aggregated).
+- Each horizontal bar is a frame (whereas in a trace, each bar is a span).
+- Each frame represents a method. The frames are arranged from top to bottom, in the order that each method was called during a program’s execution.
+- Each color represents a different package.
+- The top frame defined here is usually called the “root frame” and its value is the sum of the child frames. Comparing it to a pie chart, the root frame is the total pie (sum of the resource consumption) and each stack trace represents a different piece of the pie.
+- The width of each frame corresponds to its resource consumption. The longer the frame, the more CPU Time was used. The width of the frame is the cumulative time, which is equal to the amount of time spent on the method itself (called the self time) plus the time spent on its child frames.
+- Two methods appearing side by side could have been called in parallel or in any order. Frames are ordered alphabetically from left to right.
+- The bottom frame is called the leaf frame and represents the last method called in the stack. The leaf frame only represents its self time because it has no child frames.
+- Note that the convention used in stack traces for Ruby and Python is to show the file name and instead of the class name. For Java, the convention used in stack traces is the class name, so the profiler uses the class name in the profiles.
+In summary, Profiles reveal which methods/functions consume the most resources, such as CPU, memory allocation, wall time, and I/O time spent. With this information, you can optimize your code to reduce end-user latency and cloud provider costs.
+
+|                  | APM and Distributed Tracing                                                                       | Continuous Profiling                                                                  |
+| ---------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Visibility level | Services and third party APIs                                                                     | 100% of the code (methods, classes, threads)                                          |
+| Measurement      | Requests, errors, duration (latency)                                                              | Resource consumption (CPU, memory, time)                                              |
+| Flame graph      | Time spent on execution path of a request across multiple services, including duration and errors | Aggregation of resource consumption per minute, including per method and per endpoint |
+The most common [profile types](https://docs.datadoghq.com/profiler/profile_types):
+
+- **CPU** profiling measures which methods consume the most CPU on an application.
+- **Allocation** profiling measures the amount (both in terms of count and size in Bytes) of memory allocated by a given method. Note: This isn’t retained memory, which means that the allocated memory that is measured may or may not be garbage collected.
+- **Heap** profiling measures the amount of heap memory allocated by each function that hasn’t been garbage collected (yet). This is useful for investigating the overall memory usage of your service and identifying potential memory leaks.
+- **Lock** profiling measures the amount of time a thread is waiting to acquire a lock and is hence doing nothing.
+- **Wall Time** profiling measures the effective time spent by methods (regardless of whether those methods were running on CPU, waiting for network I/O, blocked by another thread, or just idle). It can be useful to debug latency at first glance and then dig into the other profiling types to find out what was causing the latency. The wall time profile can be considered to be the most similar to the associated APM flame graph.
+- **File I/O** and **Socket I/O** measure the number of time spent by methods on disk (for example, reading a file from disk) and network I/O operations (for example, waiting for an API call to return).
+- **Exceptions** measures the amount of exceptions thrown. The profiler doesn’t catch/handle exceptions, but it tracks their creation. (For Java, exceptions and errors aren’t synonymous, and errors are more likely to be unrecoverable, such as in the case of an OutOfMemoryError).
+## Percentage of Profile
+![](profile-percentage.png)
+
+`(##% of profile)` is displayed next to the CPU Time. The profile data for this trace is ## percentage of the full profile data. The remaining percentage of the data is for other endpoint calls, running the server, JVM internal processes like garbage collection, etc. To see the full profile, set **Trace filter** to `No Filter`. You'll see the total CPU Time displayed and other frames will appear.
 
 ---
 
