@@ -66,6 +66,10 @@ Gotchas:
 ![](dd-trace-dotnet-2.png)
 Source: GenAI
 
+## Instrumentation
+![](types-of-auto-instrumentation.png)
+Generated from NotebookLM when the source was https://opentelemetry.io/blog/2025/demystifying-auto-instrumentation/ 
+
 ---
 
 # Logs
